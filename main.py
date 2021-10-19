@@ -1,9 +1,10 @@
+import sys
 import pytesseract
-from io import BytesIO
-from PIL import Image, ImageGrab
+
+from PIL import ImageGrab
+
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QAction, QSystemTrayIcon, QMenu
-import sys
 
 pytesseract.pytesseract.tesseract_cmd = r'D:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     menu.addAction("Quit", App.quit)
     tray.setContextMenu(menu)
 
-    tray.activated.connect(canvas.showFullScreen)
+    # tray.activated.connect(canvas.showFullScreen)
 
     sys.exit(App.exec())
 
@@ -108,4 +109,3 @@ if __name__ == "__main__":
 # To-do
 
     # After canvas is closed, send notification with the extracted text, and send text to clipboard
-    # Better OCR text detection

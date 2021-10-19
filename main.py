@@ -1,5 +1,6 @@
 import pytesseract
-from PIL import ImageGrab
+from io import BytesIO
+from PIL import Image, ImageGrab
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QAction, QSystemTrayIcon, QMenu
 import sys
@@ -45,12 +46,22 @@ class Canvas(QWidget):
         x1, y1, x2, y2 = self.getRectCoords(p1, p2)
 
         img = ImageGrab.grab()
-        img = img.crop((x1, y1, x2, y2))
+        img = img.crop((x1, y1, x2, y2)).convert('L')
+
+        width, height = img.size
+        ratio = width/height
+
+        new_height = 500
+        new_width = int(new_height * ratio)
+
+        img = img.resize((new_width, new_height))
+        img = img.point(lambda x: 0 if x<100 else 255, '1')
+        # img.show()
+
         result = pytesseract.image_to_string(img, config="--psm 6")
-
         print(result)
-        self.copyToClipboard(result)
 
+        self.copyToClipboard(result)
         self.close()
 
     def getRectCoords(self, p1, p2):
@@ -89,7 +100,7 @@ if __name__ == "__main__":
     menu.addAction("Quit", App.quit)
     tray.setContextMenu(menu)
 
-    # tray.activated.connect(canvas.showFullScreen)
+    tray.activated.connect(canvas.showFullScreen)
 
     sys.exit(App.exec())
 
